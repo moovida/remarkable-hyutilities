@@ -1,4 +1,4 @@
-package com.hydrologis.remarkable;
+package com.hydrologis.remarkable.examples;
 
 import java.awt.Container;
 import java.awt.GridBagConstraints;
