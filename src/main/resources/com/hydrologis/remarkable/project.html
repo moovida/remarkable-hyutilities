@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Geopaparazzi Project Page</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+      
+    <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js'></script>
+    <script type='text/javascript' src='http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js?2'></script>
+</head>
+<body>
+	<div id="map" style="width: <script>Math.max(960, window.innerWidth) - 30</script>px; height: 800px"></div>
+	
+	<script>
+		var map = L.map('map').setView([0.0, 0.0], 10);
+		
+		var infoIcon = L.icon({
+		    iconUrl: 'http://maps.google.com/mapfiles/kml/pal4/icon29.png',
+		    iconSize:     [32, 32], 
+		    iconAnchor:   [16, 16], 
+		    popupAnchor:  [0, -16] 
+		});
+		var photoIcon = L.icon({
+		    iconUrl: 'http://maps.google.com/mapfiles/kml/pal4/icon38.png',
+		    iconSize:     [32, 32],
+		    iconAnchor:   [16, 16], 
+		    popupAnchor:  [0, -16] 
+		});
+
+		var mapnik = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map);
+		
+		var opencycle = L.tileLayer('http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://www.opencyclemap.org">OpenCycleMap</a>, &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		});
+		
+		var esri_world = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+			attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+		});
+		
+		var mtbmap = L.tileLayer('http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &amp; USGS'
+		});
+		
+		var baseMaps = {
+		    "mapnik": mapnik,
+		    "opencycle": opencycle,
+		    "esri_world": esri_world,
+		    "mtbmap": mtbmap,
+		};
+		L.control.layers(baseMaps).addTo(map);
+
+		var fixBounds;
+
+		//MARKERS
+		//L.marker([51.51, -0.091]).addTo(map) .bindPopup("<b>Hello world!</b><br />I am a popup.").openPopup();
+
+		//LOGS
+		// var polyline = L.polyline([ [51.509, -0.08], [51.503, -0.06], [51.51, -0.047] ], {color: 'red'}).addTo(map);
+
+		map.fitBounds(fixBounds);
+		
+		var popup = L.popup();
+
+		function onMapClick(e) {
+			popup
+				.setLatLng(e.latlng)
+				.setContent("You clicked at: <br/>longitude = " + e.latlng.lng + "<br/>latitude = " + e.latlng.lat)
+				.openOn(map);
+		}
+
+		map.on('click', onMapClick);
+
+	</script>
+</body>
+</html>
