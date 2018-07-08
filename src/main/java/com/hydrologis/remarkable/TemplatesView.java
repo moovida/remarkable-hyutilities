@@ -1,41 +1,48 @@
 package com.hydrologis.remarkable;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
-
 import javax.swing.Box;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 
 public class TemplatesView extends JPanel
 {
-   JLabel _hodstLabel = new JLabel();
+   JLabel _hostLabel = new JLabel();
    JTextField _hostField = new JTextField();
+   JLabel _passwordLabel = new JLabel();
    JPasswordField _passwordField = new JPasswordField();
-   JTextField _localPathField = new JTextField();
-   JButton _localPathButton = new JButton();
-   JTable _localTemplatesTable = new JTable();
+   JTable _localTable = new JTable();
    JTextField _remotePathField = new JTextField();
-   JTable _remoteTemplatesTable = new JTable();
+   JTable _remoteTable = new JTable();
    JButton _refreshRemoteTemplatesButton = new JButton();
    JLabel _userLabel = new JLabel();
    JTextField _userField = new JTextField();
    JButton _uploadButton = new JButton();
-   JButton _downloadButton = new JButton();
+   JRadioButton _templatesModeButton = new JRadioButton();
+   ButtonGroup _buttongroup1 = new ButtonGroup();
+   JRadioButton _graphicsModeButton = new JRadioButton();
+   JRadioButton _backupModeButton = new JRadioButton();
+   JLabel _basefolderLabel = new JLabel();
+   JTextField _basefolderField = new JTextField();
+   JButton _basefolderButton = new JButton();
+   JButton _backupButton = new JButton();
 
    /**
     * Default constructor
@@ -127,25 +134,25 @@ public class TemplatesView extends JPanel
    public JPanel createPanel()
    {
       JPanel jpanel1 = new JPanel();
-      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:8DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE");
+      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:8DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:4DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE");
       CellConstraints cc = new CellConstraints();
       jpanel1.setLayout(formlayout1);
 
-      _hodstLabel.setName("hodstLabel");
-      _hodstLabel.setText("Host");
-      jpanel1.add(_hodstLabel,cc.xy(2,2));
+      _hostLabel.setName("hostLabel");
+      _hostLabel.setText("Host");
+      jpanel1.add(_hostLabel,cc.xy(2,2));
 
       _hostField.setName("hostField");
       jpanel1.add(_hostField,cc.xywh(4,2,16,1));
 
-      JLabel jlabel1 = new JLabel();
-      jlabel1.setText("Password");
-      jpanel1.add(jlabel1,cc.xy(2,6));
+      _passwordLabel.setName("passwordLabel");
+      _passwordLabel.setText("Password");
+      jpanel1.add(_passwordLabel,cc.xy(2,6));
 
       _passwordField.setName("passwordField");
       jpanel1.add(_passwordField,cc.xywh(4,6,16,1));
 
-      jpanel1.add(createPanel1(),cc.xywh(2,9,18,13));
+      jpanel1.add(createPanel1(),cc.xywh(2,12,18,13));
       _userLabel.setName("userLabel");
       _userLabel.setText("User");
       jpanel1.add(_userLabel,cc.xy(2,4));
@@ -155,24 +162,35 @@ public class TemplatesView extends JPanel
 
       _uploadButton.setActionCommand("Upload local templates");
       _uploadButton.setName("uploadButton");
-      _uploadButton.setText("Upload local templates");
-      jpanel1.add(_uploadButton,cc.xy(2,23));
+      _uploadButton.setText("Upload local (selected mode)");
+      jpanel1.add(_uploadButton,cc.xy(2,26));
 
-      _downloadButton.setActionCommand("Download remote templates");
-      _downloadButton.setName("downloadButton");
-      _downloadButton.setText("Download remote templates");
-      jpanel1.add(_downloadButton,cc.xy(19,23));
+      jpanel1.add(createPanel2(),cc.xywh(2,10,18,1));
+      _basefolderLabel.setName("basefolderLabel");
+      _basefolderLabel.setText("Basefolder");
+      jpanel1.add(_basefolderLabel,cc.xy(2,8));
 
-      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24 });
+      _basefolderField.setName("basefolderField");
+      jpanel1.add(_basefolderField,cc.xywh(4,8,14,1));
+
+      _basefolderButton.setActionCommand("...");
+      _basefolderButton.setName("basefolderButton");
+      _basefolderButton.setText("...");
+      jpanel1.add(_basefolderButton,cc.xy(19,8));
+
+      _backupButton.setActionCommand("Backup to local");
+      _backupButton.setName("backupButton");
+      _backupButton.setText("Backup to local");
+      jpanel1.add(_backupButton,cc.xy(4,26));
+
+      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 });
       return jpanel1;
    }
 
    public JPanel createPanel1()
    {
       JPanel jpanel1 = new JPanel();
-      TitledBorder titledborder1 = new TitledBorder(null,"Templates",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,null,new Color(33,33,33));
-      jpanel1.setBorder(titledborder1);
-      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:GROW(1.0),FILL:4DLU:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:2DLU:NONE,CENTER:DEFAULT:NONE,CENTER:2DLU:NONE,FILL:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE");
+      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:GROW(1.0),FILL:4DLU:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:2DLU:NONE,FILL:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE");
       CellConstraints cc = new CellConstraints();
       jpanel1.setLayout(formlayout1);
 
@@ -180,41 +198,64 @@ public class TemplatesView extends JPanel
       jlabel1.setText("local");
       jpanel1.add(jlabel1,cc.xy(1,1));
 
-      _localPathField.setName("localPathField");
-      jpanel1.add(_localPathField,cc.xy(1,3));
-
-      _localPathButton.setActionCommand("...");
-      _localPathButton.setName("localPathButton");
-      _localPathButton.setText("...");
-      jpanel1.add(_localPathButton,cc.xy(3,3));
-
-      _localTemplatesTable.setName("localTemplatesTable");
+      _localTable.setName("localTable");
       JScrollPane jscrollpane1 = new JScrollPane();
-      jscrollpane1.setViewportView(_localTemplatesTable);
+      jscrollpane1.setViewportView(_localTable);
       jscrollpane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       jscrollpane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      jpanel1.add(jscrollpane1,cc.xywh(1,5,3,1));
+      jpanel1.add(jscrollpane1,cc.xywh(1,3,3,1));
 
       JLabel jlabel2 = new JLabel();
       jlabel2.setText("remote");
-      jpanel1.add(jlabel2,cc.xy(1,7));
+      jpanel1.add(jlabel2,cc.xy(1,5));
 
       _remotePathField.setName("remotePathField");
-      jpanel1.add(_remotePathField,cc.xy(1,8));
+      jpanel1.add(_remotePathField,cc.xy(1,6));
 
-      _remoteTemplatesTable.setName("remoteTemplatesTable");
+      _remoteTable.setName("remoteTable");
       JScrollPane jscrollpane2 = new JScrollPane();
-      jscrollpane2.setViewportView(_remoteTemplatesTable);
+      jscrollpane2.setViewportView(_remoteTable);
       jscrollpane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       jscrollpane2.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      jpanel1.add(jscrollpane2,cc.xywh(1,9,3,1));
+      jpanel1.add(jscrollpane2,cc.xywh(1,7,3,1));
 
       _refreshRemoteTemplatesButton.setActionCommand("Refresh");
       _refreshRemoteTemplatesButton.setName("refreshRemoteTemplatesButton");
       _refreshRemoteTemplatesButton.setText("Refresh");
-      jpanel1.add(_refreshRemoteTemplatesButton,cc.xy(3,8));
+      jpanel1.add(_refreshRemoteTemplatesButton,cc.xy(3,6));
 
-      addFillComponents(jpanel1,new int[]{ 2,3 },new int[]{ 2,4,6,10 });
+      addFillComponents(jpanel1,new int[]{ 2,3 },new int[]{ 2,4,8 });
+      return jpanel1;
+   }
+
+   public JPanel createPanel2()
+   {
+      JPanel jpanel1 = new JPanel();
+      TitledBorder titledborder1 = new TitledBorder(null,"Working mode",TitledBorder.DEFAULT_JUSTIFICATION,TitledBorder.DEFAULT_POSITION,null,new Color(33,33,33));
+      jpanel1.setBorder(titledborder1);
+      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE");
+      CellConstraints cc = new CellConstraints();
+      jpanel1.setLayout(formlayout1);
+
+      _templatesModeButton.setActionCommand("templates");
+      _templatesModeButton.setName("templatesModeButton");
+      _templatesModeButton.setText("templates");
+      _buttongroup1.add(_templatesModeButton);
+      jpanel1.add(_templatesModeButton,cc.xy(2,2));
+
+      _graphicsModeButton.setActionCommand("graphics");
+      _graphicsModeButton.setName("graphicsModeButton");
+      _graphicsModeButton.setText("graphics");
+      _buttongroup1.add(_graphicsModeButton);
+      jpanel1.add(_graphicsModeButton,cc.xy(5,2));
+
+      _backupModeButton.setActionCommand("backup");
+      _backupModeButton.setName("backupModeButton");
+      _backupModeButton.setText("backup");
+      _buttongroup1.add(_backupModeButton);
+      jpanel1.add(_backupModeButton,cc.xy(8,2));
+
+      addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8 },new int[]{ 1,2,3 });
       return jpanel1;
    }
 

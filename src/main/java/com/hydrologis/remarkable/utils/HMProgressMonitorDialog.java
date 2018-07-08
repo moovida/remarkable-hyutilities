@@ -77,14 +77,17 @@ public abstract class HMProgressMonitorDialog implements PropertyChangeListener 
         this.parent = parent;
         progressMonitor = new ProgressMonitor(parent, title, "", 0, workLoad);
         progressMonitor.setProgress(0);
+        progressMonitor.setMillisToPopup(100);
+        progressMonitor.setMillisToDecideToPopup(100);
+        task = new BackgroundTask();
+        task.addPropertyChangeListener(this);
     }
 
     /**
      * Start the job with monitor dialog.
      */
     public void run() {
-        task = new BackgroundTask();
-        task.addPropertyChangeListener(this);
+        task.firePropertyChange("progressText", "", "Starting...");
         task.execute();
     }
 
