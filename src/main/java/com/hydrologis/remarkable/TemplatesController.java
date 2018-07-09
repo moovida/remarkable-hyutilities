@@ -1,13 +1,13 @@
 package com.hydrologis.remarkable;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,28 +17,29 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONWriter;
 
+import com.hydrologis.remarkable.progress.ActionWithProgress;
+import com.hydrologis.remarkable.progress.ProgressMonitor;
 import com.hydrologis.remarkable.utils.DefaultGuiBridgeImpl;
 import com.hydrologis.remarkable.utils.FileUtilities;
 import com.hydrologis.remarkable.utils.GuiBridgeHandler;
 import com.hydrologis.remarkable.utils.GuiUtilities;
 import com.hydrologis.remarkable.utils.GuiUtilities.IOnCloseListener;
-import com.hydrologis.remarkable.utils.HMProgressMonitorDialog;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 
+@SuppressWarnings("serial")
 public class TemplatesController extends TemplatesView implements IOnCloseListener {
 
     private static final String BACKUP_FOLDERNAME = "backup";
@@ -62,15 +63,15 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
     };
     private MODE currentMode = MODE.TEMPLATES;
 
-    private GuiBridgeHandler guiBridge;
     private String[] remoteDataArray;
     private List<String> localTemplatesNamesList = new ArrayList<>();
     private List<String> localGraphicsNamesList = new ArrayList<>();
     private List<String> localBackupNamesList = new ArrayList<>();
 
+    private Action backupAction;
+
     public TemplatesController( GuiBridgeHandler guiBridge ) {
-        this.guiBridge = guiBridge;
-        setPreferredSize(new Dimension(900, 600));
+        setPreferredSize(new Dimension(900, 800));
 
         String host = GuiUtilities.getPreference(PreKeys.HOST, "");
         String user = GuiUtilities.getPreference(PreKeys.USER, "");
@@ -100,6 +101,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
         _passwordField.addKeyListener(new KeyAdapter(){
             @Override
             public void keyReleased( KeyEvent e ) {
+                @SuppressWarnings("deprecation")
                 String pwdText = _passwordField.getText();
                 GuiUtilities.setPreference(PreKeys.PDW, pwdText);
             }
@@ -130,38 +132,45 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
         _remotePathField.setEditable(false);
 
-        _refreshRemoteTemplatesButton.addActionListener(e -> {
-            try (EasySession session = new EasySession()) {
-
-                getRemoteData(session.getSession());
-            } catch (Exception e1) {
-                e1.printStackTrace();
-                JOptionPane.showMessageDialog(this, e1.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+        ActionWithProgress getRemoteDataAction = new ActionWithProgress(this, "Get remote data...", 2, true){
+            @Override
+            public void onError( Exception e ) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(parent, e.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
             }
 
-        });
+            @Override
+            public void backGroundWork( ProgressMonitor monitor ) throws Exception {
+                try (EasySession session = new EasySession()) {
+                    getRemoteData(session.getSession());
+                }
+            }
+        };
+        _refreshRemoteTemplatesButton.setAction(getRemoteDataAction);
+        _refreshRemoteTemplatesButton.setText("refresh");
 
         _uploadButton.setEnabled(false);
-        _uploadButton.addActionListener(e -> {
-            if (currentMode == MODE.TEMPLATES) {
-                uploadTemplates();
-            } else if (currentMode == MODE.GRAPHICS) {
-                uploadGraphics();
-            } else if (currentMode == MODE.BACKUP) {
-                JOptionPane.showMessageDialog(this, "Not implemented yet", "WARNING", JOptionPane.WARNING_MESSAGE);
-            }
-        });
+
         _backupButton.setVisible(false);
-        _backupButton.addActionListener(e -> {
-            try {
-                _backupButton.setEnabled(false);
-                backup();
-            } catch (Exception e1) {
-                e1.printStackTrace();
-            } finally {
-                _backupButton.setEnabled(true);
+        backupAction = new ActionWithProgress(this, "Backup", 4, false){
+            @Override
+            public void onError( Exception e ) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(parent, e.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
             }
-        });
+
+            @Override
+            public void backGroundWork( ProgressMonitor monitor ) throws Exception {
+                backup(monitor);
+            }
+
+            @Override
+            public void postWork() throws Exception {
+                refreshLocal();
+            }
+        };
+        _backupButton.setAction(backupAction);
+        _backupButton.setText("Backup");
 
         _templatesModeButton.setSelected(true);
         _templatesModeButton.addActionListener(e -> {
@@ -207,7 +216,6 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
         File graphicsFile = getGraphicsFolder(basePath);
         File backupFile = getBackupFolder(basePath);
         if (templatesFile.exists() && graphicsFile.exists() && backupFile.exists()) {
-            _uploadButton.setEnabled(true);
             return true;
         }
         return false;
@@ -240,180 +248,131 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
         return templatesFile;
     }
 
-    private void uploadTemplates() {
-        int size = localTemplatesNamesList.size();
-        if (size == 0) {
-            JOptionPane.showMessageDialog(this, "No templates available to upload!", "WARNING", JOptionPane.WARNING_MESSAGE);
-            return;
+    private void uploadTemplates( ProgressMonitor monitor ) throws Exception {
+
+        int prog = 0;
+        monitor.setCurrent("Download templates configuration file...", prog);
+        // get the json and add the pngs to upload
+        try (EasySession s1 = new EasySession()) {
+            downloadTemplatesJson(s1.getSession());
+        }
+        monitor.setCurrent("Done.", prog++);
+
+        File templatesFolder = getTemplatesFolder(null);
+        String localJsonPath = templatesFolder.getAbsolutePath() + File.separator + TEMPLATES_JSON_NAME;
+        try (EasySession s1 = new EasySession()) {
+            monitor.setCurrent("Upload new templates configuration file....", prog);
+            SshHelper.uploadFile(s1.getSession(), localJsonPath, REMOTE_TEMPLATES_JSON_PATH);
+            monitor.setCurrent(null, prog++);
+
+            for( String localTemplateName : localTemplatesNamesList ) {
+                File templateToUpload = new File(templatesFolder, localTemplateName);
+
+                monitor.setCurrent("Upload template: " + localTemplateName, prog);
+                SshHelper.uploadFile(s1.getSession(), templateToUpload.getAbsolutePath(),
+                        PreKeys.REMOTE_TEMPLATES_PATH + "/" + localTemplateName);
+                monitor.setCurrent(null, prog++);
+            }
         }
 
-        HMProgressMonitorDialog monitor = new HMProgressMonitorDialog(this, "Progress", size + 2){
-            @Override
-            public void processInBackground() throws Exception {
-                int prog = 0;
-                progressMonitor.setProgress(prog++);
-                // get the json and add the pngs to upload
-                setProgressText("Download templates configuration file...");
-                try (EasySession s1 = new EasySession()) {
-                    downloadTemplatesJson(s1.getSession());
-                }
-                progressMonitor.setProgress(prog++);
-
-                File templatesFolder = getTemplatesFolder(null);
-                String localJsonPath = templatesFolder.getAbsolutePath() + File.separator + TEMPLATES_JSON_NAME;
-                try (EasySession s1 = new EasySession()) {
-                    setProgressText("Upload new templates configuration file...");
-                    SshHelper.uploadFile(s1.getSession(), localJsonPath, REMOTE_TEMPLATES_JSON_PATH);
-                    progressMonitor.setProgress(prog++);
-
-                    for( String localTemplateName : localTemplatesNamesList ) {
-                        File templateToUpload = new File(templatesFolder, localTemplateName);
-                        setProgressText("Upload template: " + localTemplateName);
-                        SshHelper.uploadFile(s1.getSession(), templateToUpload.getAbsolutePath(),
-                                PreKeys.REMOTE_TEMPLATES_PATH + "/" + localTemplateName);
-                        progressMonitor.setProgress(prog++);
-                    }
-                }
-
-            }
-
-            @Override
-            public void postDoneInUi() {
-                JOptionPane.showMessageDialog(TemplatesController.this, "DONE!", "INFO", JOptionPane.INFORMATION_MESSAGE);
-            }
-        };
-        monitor.run();
     }
 
-    private void uploadGraphics() {
-        int size = localGraphicsNamesList.size();
-        if (size == 0) {
-            JOptionPane.showMessageDialog(this, "No graphics available to upload!", "WARNING", JOptionPane.WARNING_MESSAGE);
-            return;
+    private void uploadGraphics( ProgressMonitor monitor ) throws Exception {
+        int prog = 0;
+        File graphicsFolder = getGraphicsFolder(null);
+        try (EasySession s1 = new EasySession()) {
+            for( String localGraphicName : localGraphicsNamesList ) {
+                File graphicToUpload = new File(graphicsFolder, localGraphicName);
+                String remoteFile = PreKeys.REMOTE_GRAPHICS_PATH + "/" + localGraphicName;
+                monitor.setCurrent("Upload graphic: " + localGraphicName, prog);
+                SshHelper.uploadFile(s1.getSession(), graphicToUpload.getAbsolutePath(), remoteFile);
+                monitor.setCurrent(null, prog++);
+            }
         }
-
-        HMProgressMonitorDialog monitor = new HMProgressMonitorDialog(this, "Progress", size){
-            @Override
-            public void processInBackground() throws Exception {
-                int prog = 0;
-                progressMonitor.setProgress(prog++);
-
-                File graphicsFolder = getGraphicsFolder(null);
-                try (EasySession s1 = new EasySession()) {
-                    for( String localGraphicName : localGraphicsNamesList ) {
-                        File graphicToUpload = new File(graphicsFolder, localGraphicName);
-                        String remoteFile = PreKeys.REMOTE_GRAPHICS_PATH + "/" + localGraphicName;
-                        setProgressText("Upload graphic: " + localGraphicName);
-                        SshHelper.uploadFile(s1.getSession(), graphicToUpload.getAbsolutePath(), remoteFile);
-                        progressMonitor.setProgress(prog++);
-                    }
-                }
-
-            }
-
-            @Override
-            public void postDoneInUi() {
-                JOptionPane.showMessageDialog(TemplatesController.this, "DONE!", "INFO", JOptionPane.INFORMATION_MESSAGE);
-            }
-        };
-        monitor.run();
     }
 
-    private void backup() {
-        HMProgressMonitorDialog monitor = new HMProgressMonitorDialog(this, "Progress", 3){
-            @Override
-            public void processInBackground() throws Exception {
-                int prog = 1;
+    private void backup( ProgressMonitor monitor ) throws Exception {
+        monitor.start("Backing up data from device to local...");
+        int prog = 1;
+        File backupFolder = getBackupFolder(null);
+        try (EasySession s1 = new EasySession()) {
+            monitor.setCurrent("Compressing remote data for backup (this might take a while...)", prog++);
+            compress(s1.getSession());
 
-                File backupFolder = getBackupFolder(null);
-                try (EasySession s1 = new EasySession()) {
-                    setProgressText("Compressing remote data for backup (this might take a while...)");
-                    compress(s1.getSession());
-                    progressMonitor.setProgress(prog++);
+            monitor.setCurrent("Downloading backup data (this might take a while depending on the size...)", prog++);
+            File newBackup = new File(backupFolder, dateFormatter.format(new Date()) + "_backup.tar.gz");
+            SshHelper.downloadFile(s1.getSession(), "~/backup.tar.gz", newBackup.getAbsolutePath());
 
-                    setProgressText("Downloading backup data (this might take a while depending on the size...)");
-                    File newBackup = new File(backupFolder, dateFormatter.format(new Date()) + "_backup.tar.gz");
-                    SshHelper.downloadFile(s1.getSession(), "~/backup.tar.gz", newBackup.getAbsolutePath());
-                    progressMonitor.setProgress(prog++);
+            monitor.setCurrent("Cleanup on device...", prog++);
+            cleanup(s1.getSession());
+            monitor.setCurrent("Backup done!", prog++);
+        }
+    }
 
-                    cleanup(s1.getSession());
-                    progressMonitor.setProgress(prog++);
-                }
-
+    private void compress( Session session ) throws Exception {
+        String command = "tar -zcvf backup.tar.gz /home/root/.local/share/remarkable/xochitl";
+        Channel channel = session.openChannel("exec");
+        ((ChannelExec) channel).setCommand(command);
+        channel.setInputStream(null);
+        ((ChannelExec) channel).setErrStream(System.err);
+        InputStream in = channel.getInputStream();
+        channel.connect();
+//        StringBuilder sb = new StringBuilder();
+        byte[] tmp = new byte[1024];
+        while( true ) {
+            while( in.available() > 0 ) {
+                int i = in.read(tmp, 0, 1024);
+                if (i < 0)
+                    break;
+//                sb.append(new String(tmp, 0, i));
+                System.out.println(new String(tmp, 0, i));
             }
-
-            private void compress( Session session ) throws Exception {
-                String command = "tar -zcvf backup.tar.gz /home/root/.local/share/remarkable/xochitl";
-                Channel channel = session.openChannel("exec");
-                ((ChannelExec) channel).setCommand(command);
-                channel.setInputStream(null);
-                ((ChannelExec) channel).setErrStream(System.err);
-                InputStream in = channel.getInputStream();
-                channel.connect();
-//                StringBuilder sb = new StringBuilder();
-                byte[] tmp = new byte[1024];
-                while( true ) {
-                    while( in.available() > 0 ) {
-                        int i = in.read(tmp, 0, 1024);
-                        if (i < 0)
-                            break;
-//                        sb.append(new String(tmp, 0, i));
-                        System.out.println(new String(tmp, 0, i));
-                    }
-                    if (channel.isClosed()) {
-                        if (in.available() > 0)
-                            continue;
-                        System.out.println("exit-status: " + channel.getExitStatus());
-                        break;
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception ee) {
-                    }
-                }
-                channel.disconnect();
-
+            if (channel.isClosed()) {
+                if (in.available() > 0)
+                    continue;
+                System.out.println("exit-status: " + channel.getExitStatus());
+                break;
             }
-
-            private void cleanup( Session session ) throws Exception {
-                String command = "rm backup.tar.gz";
-                Channel channel = session.openChannel("exec");
-                ((ChannelExec) channel).setCommand(command);
-                channel.setInputStream(null);
-                ((ChannelExec) channel).setErrStream(System.err);
-                InputStream in = channel.getInputStream();
-                channel.connect();
-//                StringBuilder sb = new StringBuilder();
-                byte[] tmp = new byte[1024];
-                while( true ) {
-                    while( in.available() > 0 ) {
-                        int i = in.read(tmp, 0, 1024);
-                        if (i < 0)
-                            break;
-//                        sb.append(new String(tmp, 0, i));
-                        System.out.println(new String(tmp, 0, i));
-                    }
-                    if (channel.isClosed()) {
-                        if (in.available() > 0)
-                            continue;
-                        System.out.println("exit-status: " + channel.getExitStatus());
-                        break;
-                    }
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception ee) {
-                    }
-                }
-                channel.disconnect();
-
+            try {
+                Thread.sleep(1000);
+            } catch (Exception ee) {
             }
+        }
+        channel.disconnect();
 
-            @Override
-            public void postDoneInUi() {
-                JOptionPane.showMessageDialog(TemplatesController.this, "DONE!", "INFO", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void cleanup( Session session ) throws Exception {
+        String command = "rm backup.tar.gz";
+        Channel channel = session.openChannel("exec");
+        ((ChannelExec) channel).setCommand(command);
+        channel.setInputStream(null);
+        ((ChannelExec) channel).setErrStream(System.err);
+        InputStream in = channel.getInputStream();
+        channel.connect();
+//        StringBuilder sb = new StringBuilder();
+        byte[] tmp = new byte[1024];
+        while( true ) {
+            while( in.available() > 0 ) {
+                int i = in.read(tmp, 0, 1024);
+                if (i < 0)
+                    break;
+//                sb.append(new String(tmp, 0, i));
+                System.out.println(new String(tmp, 0, i));
             }
-        };
-        monitor.run();
+            if (channel.isClosed()) {
+                if (in.available() > 0)
+                    continue;
+                System.out.println("exit-status: " + channel.getExitStatus());
+                break;
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (Exception ee) {
+            }
+        }
+        channel.disconnect();
+
     }
 
     private void downloadTemplatesJson( Session session ) {
@@ -576,6 +535,39 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
                 _localTable.setModel(new DefaultTableModel(backupsArray, new String[]{"Backup"}));
             }
         }
+
+        int size = 0;
+        if (currentMode == MODE.TEMPLATES) {
+            size = localTemplatesNamesList.size();
+        } else if (currentMode == MODE.GRAPHICS) {
+            size = localGraphicsNamesList.size();
+        } else if (currentMode == MODE.BACKUP) {
+            size = 0; // no upload here
+        }
+        if (size != 0) {
+            _uploadButton.setEnabled(true);
+            ActionWithProgress uploadAction = new ActionWithProgress(this, "Upload", size, false){
+                @Override
+                public void onError( Exception e ) {
+                    JOptionPane.showMessageDialog(parent, "ERROR: " + e.getLocalizedMessage(), "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+                @Override
+                public void backGroundWork( ProgressMonitor monitor ) throws Exception {
+                    if (currentMode == MODE.TEMPLATES) {
+                        uploadTemplates(monitor);
+                    } else if (currentMode == MODE.GRAPHICS) {
+                        uploadGraphics(monitor);
+                    }
+
+                }
+            };
+            _uploadButton.setAction(uploadAction);
+            _uploadButton.setText("Upload local (selected mode)");
+        } else {
+            _uploadButton.setEnabled(false);
+        }
     }
 
     private void refreshRemote() {
@@ -630,6 +622,14 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
         frame.setIconImage(icon.getImage());
 
         GuiUtilities.addClosingListener(frame, controller);
+
+        Dimension prefSize = frame.getPreferredSize();
+        Dimension parentSize;
+        java.awt.Point parentLocation = new java.awt.Point(0, 0);
+        parentSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = parentLocation.x + (parentSize.width - prefSize.width) / 2;
+        int y = parentLocation.y + (parentSize.height - prefSize.height) / 2;
+        frame.setLocation(x, y);
 
     }
 }
