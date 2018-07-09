@@ -43,6 +43,7 @@ public class TemplatesView extends JPanel
    JTextField _basefolderField = new JTextField();
    JButton _basefolderButton = new JButton();
    JButton _backupButton = new JButton();
+   JButton _aboutButton = new JButton();
 
    /**
     * Default constructor
@@ -182,6 +183,11 @@ public class TemplatesView extends JPanel
       _backupButton.setName("backupButton");
       _backupButton.setText("Backup to local");
       jpanel1.add(_backupButton,cc.xy(4,26));
+
+      _aboutButton.setActionCommand("About");
+      _aboutButton.setName("aboutButton");
+      _aboutButton.setText("About");
+      jpanel1.add(_aboutButton,cc.xy(19,26));
 
       addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 });
       return jpanel1;

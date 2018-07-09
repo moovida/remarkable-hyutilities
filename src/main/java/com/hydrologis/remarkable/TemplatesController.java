@@ -197,6 +197,16 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
                 _backupButton.setVisible(true);
             }
         });
+
+        _aboutButton.addActionListener(e -> {
+            JOptionPane.showMessageDialog(this,
+                    "This software is developed by HydroloGIS S.r.l. and released under GPL v3.0 license.\n\n"
+                            + "We carry no responability if the software burned your reMarkable to death\n"
+                            + "or destroyed your data (but yes, we would be very sorry about that).\n\n"
+                            + "If you find the application useful and feel the urge to thank us, send us a box of good beer from your country.",
+                    "ABOUT Remarkable-HyUtilities v1.0", JOptionPane.INFORMATION_MESSAGE);
+        });
+
         if (checkLocalPath(localPath)) {
             _basefolderField.setText(localPath);
         }
@@ -614,7 +624,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
         DefaultGuiBridgeImpl gBridge = new DefaultGuiBridgeImpl();
         final TemplatesController controller = new TemplatesController(gBridge);
-        final JFrame frame = gBridge.showWindow(controller.asJComponent(), "Remarkable Utilities");
+        final JFrame frame = gBridge.showWindow(controller.asJComponent(), "Remarkable HyUtilities");
 
         Class<TemplatesController> class1 = TemplatesController.class;
         URL resource = class1.getResource("/com/hydrologis/remarkable/hm150.png");
