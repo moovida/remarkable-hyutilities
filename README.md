@@ -64,16 +64,16 @@ The **backup** mode is a download only mode at the moment. It enables the backup
 If that one is pushed, the application will:
 
 * compress all your data on the device 
-* download the tar.gz archive to teh loacl folder
+* download the tar.gz archive to the local folder
 * remove the archive from the device again
 
 
-**Note that the backup action can be very long going if you have many data on the device. Let the app teh time to finish.**
+**Note that the backup action can be very long going if you have many data on the device. Let the app the time to finish.**
 
 ## Restart device
 
 There is also a restart device button. Once uploads have been done, it is better to restart your device. 
-It can be done manually or through teh button.
+It can be done manually or through the button.
 
 # Warning
 
