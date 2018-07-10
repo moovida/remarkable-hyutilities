@@ -163,7 +163,8 @@ public class FileUtilities {
         if (!file.exists()) {
             throw new FileNotFoundException("The required projection file is not available: " + file.getAbsolutePath());
         }
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader br = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file.getAbsolutePath()), "UTF-8"))) {
             StringBuilder sb = new StringBuilder(200);
             String line;
             while( (line = br.readLine()) != null ) {

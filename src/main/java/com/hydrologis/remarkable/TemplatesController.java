@@ -34,6 +34,7 @@ import com.hydrologis.remarkable.utils.FileUtilities;
 import com.hydrologis.remarkable.utils.GuiBridgeHandler;
 import com.hydrologis.remarkable.utils.GuiUtilities;
 import com.hydrologis.remarkable.utils.GuiUtilities.IOnCloseListener;
+import com.hydrologis.remarkable.utils.IconsHandler;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
@@ -50,6 +51,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
     private static final String TEMPLATES_KEY_IN_JSON = "templates";
     private static final String FILENAME_KEY_IN_JSON = "filename";
+    private static final String ICONCODE_KEY_IN_JSON = "iconCode";
     private static final String TEMPLATES_JSON_NAME = "templates.json";
     private static final String LS_TEMPLATES = "ls " + PreKeys.REMOTE_TEMPLATES_PATH + "/*.png";
     private static final String LS_GRAPHICS = "ls " + PreKeys.REMOTE_GRAPHICS_PATH + "/*.{png,bmp}";
@@ -197,6 +199,23 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
                 _backupButton.setVisible(true);
             }
         });
+
+        ActionWithProgress restartAction = new ActionWithProgress(this, "Restart", 4, true){
+            @Override
+            public void onError( Exception e ) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(parent, e.getLocalizedMessage(), "ERROR", JOptionPane.ERROR_MESSAGE);
+            }
+
+            @Override
+            public void backGroundWork( ProgressMonitor monitor ) throws Exception {
+                try (EasySession s1 = new EasySession()) {
+                    SshHelper.launchSshCommand(s1.getSession(), "systemctl restart xochitl");
+                }
+            }
+        };
+        _restartRemarkableButton.setAction(restartAction);
+        _restartRemarkableButton.setText("Restart Device");
 
         _aboutButton.addActionListener(e -> {
             JOptionPane.showMessageDialog(this,
@@ -403,6 +422,11 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
             for( int i = 0; i < templatesArray.length(); i++ ) {
                 JSONObject templateObject = templatesArray.getJSONObject(i);
                 String fileName = templateObject.getString(FILENAME_KEY_IN_JSON);
+                String iconCode = templateObject.getString(ICONCODE_KEY_IN_JSON);
+                String iconString = IconsHandler.INSTANCE.getIconString(iconCode);
+                if (iconString != null) {
+                    templateObject.put(ICONCODE_KEY_IN_JSON, iconString);
+                }
                 remoteTemplateFileNames.add(fileName);
             }
 
@@ -417,6 +441,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
             FileUtilities.copyFile(localJsonPath, localJsonPath + "_" + dateFormatter.format(new Date()));
 
             String newTemplates = root.toString(2);
+            newTemplates = newTemplates.replaceAll("\\\\\\\\", "\\\\");
             FileUtilities.writeFile(newTemplates, new File(localJsonPath));
 
         } catch (Exception e) {
@@ -430,7 +455,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
         String json = "{" + //
                 "       \"name\": \"" + name + "\"," + //
                 "       \"filename\": \"" + fileName + "\"," + //
-                "       \"iconCode\": \"\ue9fe\"," + //
+                "       \"iconCode\": \"" + IconsHandler.CUSTOM_ICON + "\"," + //
                 "       \"categories\": [" + //
                 "              \"Custom\"" + //
                 "       ]" + //
