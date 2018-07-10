@@ -61,12 +61,12 @@ public abstract class ActionWithProgress extends AbstractAction {
 
                 backGroundWork(monitor);
 
-                setEnabled(true);
 
                 postWork();
             } catch (Exception e) {
                 onError(e);
             } finally {
+                setEnabled(true);
                 // to ensure that progress dlg is closed in case of any exception
                 if (monitor != null && monitor.getCurrent() != monitor.getTotal())
                     monitor.setCurrent(null, monitor.getTotal());
