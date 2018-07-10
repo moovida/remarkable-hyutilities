@@ -67,6 +67,9 @@ If that one is pushed, the application will:
 * download the tar.gz archive to teh loacl folder
 * remove the archive from the device again
 
+
+**Note that the backup action can be very long going if you have many data on the device. Let the app teh time to finish.**
+
 ## Restart device
 
 There is also a restart device button. Once uploads have been done, it is better to restart your device. 
