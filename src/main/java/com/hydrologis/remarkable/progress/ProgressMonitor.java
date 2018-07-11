@@ -87,7 +87,7 @@ public class ProgressMonitor{
         listeners.remove(listener); 
     } 
  
-    private void fireChangeEvent(){ 
+    private synchronized void fireChangeEvent(){ 
         Iterator iter = listeners.iterator(); 
         while(iter.hasNext()){ 
             ((ChangeListener)iter.next()).stateChanged(ce); 

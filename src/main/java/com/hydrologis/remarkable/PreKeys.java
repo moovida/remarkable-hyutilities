@@ -3,7 +3,7 @@ package com.hydrologis.remarkable;
 public interface PreKeys {
     String HOST = "REMARKABLE_HOST";
     String USER = "REMARKABLE_USER";
-    String PDW = "REMARKABLE_PWD";
+    String PWD = "REMARKABLE_PWD";
     String LOCAL_BASEPATH = "REMARKABLE_LOCAL_BASEPATH";
     
     String REMOTE_TEMPLATES_PATH = "/usr/share/remarkable/templates";

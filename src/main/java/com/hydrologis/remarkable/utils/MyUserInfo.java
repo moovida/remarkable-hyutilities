@@ -9,7 +9,7 @@ import com.jcraft.jsch.UserInfo;
 public class MyUserInfo implements UserInfo, UIKeyboardInteractive {
 
     public String getPassword() {
-        String thePwd = GuiUtilities.getPreference(PreKeys.PDW, "");
+        String thePwd = GuiUtilities.getPreference(PreKeys.PWD, "");
         return thePwd;
     }
     public boolean promptYesNo( String str ) {

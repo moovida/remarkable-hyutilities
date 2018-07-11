@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.swing.Action;
@@ -77,7 +79,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
         String host = GuiUtilities.getPreference(PreKeys.HOST, "");
         String user = GuiUtilities.getPreference(PreKeys.USER, "");
-        String pwd = GuiUtilities.getPreference(PreKeys.PDW, "");
+        String pwd = GuiUtilities.getPreference(PreKeys.PWD, "");
         String localPath = GuiUtilities.getPreference(PreKeys.LOCAL_BASEPATH, "");
 
         _localTable.setTableHeader(null);
@@ -89,6 +91,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
             public void keyReleased( KeyEvent e ) {
                 String hostText = _hostField.getText();
                 GuiUtilities.setPreference(PreKeys.HOST, hostText);
+                checkHostUserPwdFolder();
             }
         });
         _userField.setText(user);
@@ -97,6 +100,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
             public void keyReleased( KeyEvent e ) {
                 String userText = _userField.getText();
                 GuiUtilities.setPreference(PreKeys.USER, userText);
+                checkHostUserPwdFolder();
             }
         });
         _passwordField.setText(pwd);
@@ -105,7 +109,8 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
             public void keyReleased( KeyEvent e ) {
                 @SuppressWarnings("deprecation")
                 String pwdText = _passwordField.getText();
-                GuiUtilities.setPreference(PreKeys.PDW, pwdText);
+                GuiUtilities.setPreference(PreKeys.PWD, pwdText);
+                checkHostUserPwdFolder();
             }
         });
 
@@ -196,7 +201,10 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
                 currentMode = MODE.BACKUP;
                 refreshLocal();
                 resetRemoteFields();
-                _backupButton.setVisible(true);
+
+                if (checkLocalPath(_basefolderField.getText())) {
+                    _backupButton.setVisible(true);
+                }
             }
         });
 
@@ -237,8 +245,38 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
         _remotePathField.setText("");
     }
 
+    private void checkHostUserPwdFolder() {
+        String host = GuiUtilities.getPreference(PreKeys.HOST, "");
+        String user = GuiUtilities.getPreference(PreKeys.USER, "");
+        String pwd = GuiUtilities.getPreference(PreKeys.PWD, "");
+
+        boolean okToGo = true;
+        if (!user.equals("root")) {
+            okToGo = false;
+        }
+        if (pwd.length() == 0) {
+            okToGo = false;
+        }
+        if (!ip(host)) {
+            okToGo = false;
+        }
+        if (!checkLocalPath(null)) {
+            okToGo = false;
+        }
+
+        _uploadButton.setEnabled(okToGo);
+        _backupButton.setEnabled(okToGo);
+    }
+
+    public static boolean ip( String text ) {
+        Pattern p = Pattern
+                .compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        Matcher m = p.matcher(text);
+        return m.find();
+    }
+
     private boolean checkLocalPath( String basePath ) {
-        if (basePath.trim().length() == 0) {
+        if (basePath != null && basePath.trim().length() == 0) {
             return false;
         }
         File templatesFile = getTemplatesFolder(basePath);
@@ -321,7 +359,6 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
     }
 
     private void backup( ProgressMonitor monitor ) throws Exception {
-        monitor.start("Backing up data from device to local...");
         int prog = 1;
         File backupFolder = getBackupFolder(null);
         try (EasySession s1 = new EasySession()) {

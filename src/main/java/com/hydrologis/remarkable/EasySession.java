@@ -21,7 +21,7 @@ public class EasySession implements AutoCloseable {
         java.util.Properties config = new java.util.Properties();
         config.put("StrictHostKeyChecking", "no");
         session.setConfig(config);
-        session.connect();
+        session.connect(3000);
     }
 
     public Session getSession() {
