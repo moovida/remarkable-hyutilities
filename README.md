@@ -86,3 +86,25 @@ If you find the application useful and feel the urge to thank us, send us a box 
 If you find bugs, feel free to report them here as issues.
 
 
+# FAQ
+
+## How can I find the ip address and password to use?
+
+When connected to a WIFI with your remarkable, tap on the very upper left **rM** at the left 
+of the search icon. This will enter the configurations view.
+
+Frome there select the last item of the left sidemenu: **About**. 
+
+By default the **Copyright and Licenses** tab should be selected. Look at the very bottom right. The last paragraph
+states: **The IP addresses available to connect to are listed below**, followed by the ip address to use in the 
+application.
+
+Right above this part the username and password are defined. That is the password to use in the application.
+
+
+
+
+
+
+
+
