@@ -101,6 +101,10 @@ application.
 
 Right above this part the username and password are defined. That is the password to use in the application.
 
+Look at the following screenshot if you are not sure where to find ip addresses and password:
+
+![Ip addresses and password](images/05_pwd.png)
+
 
 
 
