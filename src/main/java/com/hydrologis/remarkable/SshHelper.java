@@ -104,7 +104,7 @@ public class SshHelper {
     public static void uploadFile( Session session, String localFile, String remoteFile ) throws Exception {
         boolean ptimestamp = true;
         // exec 'scp -t rfile' remotely
-        String command = "scp " + (ptimestamp ? "-p" : "") + " -t " + remoteFile;
+        String command = "scp " + (ptimestamp ? "-p" : "") + " -t \"" + remoteFile+"\"";
         Channel channel = session.openChannel("exec");
         ((ChannelExec) channel).setCommand(command);
 
