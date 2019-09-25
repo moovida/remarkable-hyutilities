@@ -22,8 +22,12 @@ are available to windows or apple users, but they suck for linux users.
 Download the application [from the release page](https://github.com/moovida/remarkable-hyutilities/releases)
 and unzip it on your disk.
 
-To run the application launch the start.bat or start.sh file. Note that this needs [java](https://java.com/en/download/help/download_options.xml)
-to be installed on your system.
+**If you are on windows:** run the start.exe and you are done.
+
+**If you are on linux or macosx:**
+
+* make sure java is installed ([java](https://java.com/en/download/help/download_options.xml) 8 or newer)
+* run the start.sh script
 
 Once launched, you should see something like:
 
