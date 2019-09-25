@@ -45,6 +45,8 @@ import com.jcraft.jsch.Session;
 @SuppressWarnings("serial")
 public class TemplatesController extends TemplatesView implements IOnCloseListener {
 
+    private static final String VERSION = "v1.2";
+
     private static final String BACKUP_FOLDERNAME = "backup";
 
     private static final String GRAPHICS_FOLDERNAME = "graphics";
@@ -231,7 +233,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
                             + "We carry no responability if the software burned your reMarkable to death\n"
                             + "or destroyed your data (but yes, we would be very sorry about that).\n\n"
                             + "If you find the application useful and feel the urge to thank us, send us a box of good beer from your country.",
-                    "ABOUT Remarkable-HyUtilities v1.0", JOptionPane.INFORMATION_MESSAGE);
+                    "ABOUT Remarkable-HyUtilities " + VERSION, JOptionPane.INFORMATION_MESSAGE);
         });
 
         if (checkLocalPath(localPath)) {
@@ -686,7 +688,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
         DefaultGuiBridgeImpl gBridge = new DefaultGuiBridgeImpl();
         final TemplatesController controller = new TemplatesController(gBridge);
-        final JFrame frame = gBridge.showWindow(controller.asJComponent(), "Remarkable HyUtilities");
+        final JFrame frame = gBridge.showWindow(controller.asJComponent(), "Remarkable HyUtilities " + VERSION);
 
         Class<TemplatesController> class1 = TemplatesController.class;
         URL resource = class1.getResource("/com/hydrologis/remarkable/hm150.png");
