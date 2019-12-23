@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hydrologis</groupId>
 	<artifactId>remarkable-util</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.3</version>
 	<name>Remarkable Utilities</name>
 	<description>Utilities to interact with the reMarkable paper tablet</description>
 

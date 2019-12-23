@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -15,10 +16,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -70,7 +73,7 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
     private MODE currentMode = MODE.TEMPLATES;
 
     private String[] remoteDataArray;
-    private List<String> localTemplatesNamesList = new ArrayList<>();
+    private List<File> localTemplatesNamesList = new ArrayList<>();
     private List<String> localGraphicsNamesList = new ArrayList<>();
     private List<String> localBackupNamesList = new ArrayList<>();
 
@@ -334,12 +337,10 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
             SshHelper.uploadFile(s1.getSession(), localJsonPath, REMOTE_TEMPLATES_JSON_PATH);
             monitor.setCurrent(null, prog++);
 
-            for( String localTemplateName : localTemplatesNamesList ) {
-                File templateToUpload = new File(templatesFolder, localTemplateName);
-
-                monitor.setCurrent("Upload template: " + localTemplateName, prog);
-                SshHelper.uploadFile(s1.getSession(), templateToUpload.getAbsolutePath(),
-                        PreKeys.REMOTE_TEMPLATES_PATH + "/" + localTemplateName);
+            for( File localTemplateFile : localTemplatesNamesList ) {
+                monitor.setCurrent("Upload template: " + localTemplateFile.getName(), prog);
+                SshHelper.uploadFile(s1.getSession(), localTemplateFile.getAbsolutePath(),
+                        PreKeys.REMOTE_TEMPLATES_PATH + "/" + localTemplateFile.getName());
                 monitor.setCurrent(null, prog++);
             }
         }
@@ -456,30 +457,43 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
             String json = FileUtilities.readFile(localJsonPath);
             JSONObject root = new JSONObject(json);
+            JSONObject newRoot = new JSONObject();
+            JSONArray newTemplatesArray = new JSONArray();
+            newRoot.put(TEMPLATES_KEY_IN_JSON, newTemplatesArray);
+
+            TreeSet<String> templateNames = new TreeSet<>();
+            for( File localFile : localTemplatesNamesList ) {
+                String localName = localFile.getName();
+                localName = localName.replace(".png", "");
+
+                BufferedImage bi = ImageIO.read(localFile);
+                int w = bi.getWidth();
+                int h = bi.getHeight();
+                boolean isLandscape = w > h;
+                JSONObject newJson = getNewJson(localName.replace('_', ' '), localName, isLandscape);
+                newTemplatesArray.put(newJson);
+                templateNames.add(localName);
+            }
+
             JSONArray templatesArray = root.getJSONArray(TEMPLATES_KEY_IN_JSON);
-            List<String> remoteTemplateFileNames = new ArrayList<>();
             for( int i = 0; i < templatesArray.length(); i++ ) {
                 JSONObject templateObject = templatesArray.getJSONObject(i);
                 String fileName = templateObject.getString(FILENAME_KEY_IN_JSON);
-                String iconCode = templateObject.getString(ICONCODE_KEY_IN_JSON);
-                String iconString = IconsHandler.INSTANCE.getIconString(iconCode);
-                if (iconString != null) {
-                    templateObject.put(ICONCODE_KEY_IN_JSON, iconString);
+                if (templateObject.has(ICONCODE_KEY_IN_JSON)) {
+                    String iconCode = templateObject.getString(ICONCODE_KEY_IN_JSON);
+                    String iconString = IconsHandler.INSTANCE.getIconString(iconCode);
+                    if (iconString != null) {
+                        templateObject.put(ICONCODE_KEY_IN_JSON, iconString);
+                    }
                 }
-                remoteTemplateFileNames.add(fileName);
-            }
-
-            for( String localName : localTemplatesNamesList ) {
-                if (!remoteTemplateFileNames.contains(localName)) {
-                    localName = localName.replace(".png", "");
-                    JSONObject newJson = getNewJson(localName.replace('_', ' '), localName);
-                    templatesArray.put(newJson);
+                if (templateNames.add(fileName)) {
+                    newTemplatesArray.put(templateObject);
                 }
             }
 
             FileUtilities.copyFile(localJsonPath, localJsonPath + "_" + dateFormatter.format(new Date()));
 
-            String newTemplates = root.toString(2);
+            String newTemplates = newRoot.toString(2);
             newTemplates = newTemplates.replaceAll("\\\\\\\\", "\\\\");
             FileUtilities.writeFile(newTemplates, new File(localJsonPath));
 
@@ -490,11 +504,12 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
 
     }
 
-    private JSONObject getNewJson( String name, String fileName ) {
+    private JSONObject getNewJson( String name, String fileName, boolean isLandscape ) {
         String json = "{" + //
                 "       \"name\": \"" + name + "\"," + //
                 "       \"filename\": \"" + fileName + "\"," + //
                 "       \"iconCode\": \"" + IconsHandler.CUSTOM_ICON + "\"," + //
+                "       \"landscape\": \"" + (isLandscape ? "true" : "false") + "\"," + //
                 "       \"categories\": [" + //
                 "              \"Custom\"" + //
                 "       ]" + //
@@ -562,13 +577,12 @@ public class TemplatesController extends TemplatesView implements IOnCloseListen
                         return name.endsWith(".png");
                     }
                 });
-                localTemplatesNamesList = Arrays.asList(templateFiles).stream().map(f -> f.getName())
-                        .collect(Collectors.toList());
+                localTemplatesNamesList = Arrays.asList(templateFiles).stream().collect(Collectors.toList());
                 Collections.sort(localTemplatesNamesList);
 
                 String[][] templatesArray = new String[localTemplatesNamesList.size()][1];
                 for( int i = 0; i < templatesArray.length; i++ ) {
-                    templatesArray[i][0] = localTemplatesNamesList.get(i);
+                    templatesArray[i][0] = localTemplatesNamesList.get(i).getName();
                 }
                 _localTable.setModel(new DefaultTableModel(templatesArray, new String[]{"Template"}));
             }
