@@ -1,5 +1,8 @@
 # reMarkable HyUtilities
 
+**Don't care, where do I get it? [LAST VERSION HERE](https://github.com/moovida/remarkable-hyutilities/releases/download/v1.3/remarkable_hyutilities_v1.3.zip)
+
+
 reMarkable HyUtilities is a simple application that helps the reMArkable user 
 mainly with 3 things that I have been missing. Maybe some of them
 are available to windows or apple users, but they suck for linux users.
