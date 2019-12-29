@@ -1,0 +1,9 @@
+[Unit]
+Description=LEFT+RIGHT to toggle the all buttons.
+After=home.mount
+
+[Service]
+ExecStart=/home/root/button_toggler
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,9 @@
+[Unit]
+Description=LEFT+RIGHT to toggle the touchscreen.
+After=home.mount
+
+[Service]
+ExecStart=/home/root/touchToggler
+
+[Install]
+WantedBy=multi-user.target

@@ -1,17 +1,15 @@
 package com.hydrologis.remarkable;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.ComponentOrientation;
 import java.awt.Container;
 import java.awt.Dimension;
+
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -20,6 +18,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 
 public class TemplatesView extends JPanel
@@ -42,9 +43,9 @@ public class TemplatesView extends JPanel
    JLabel _basefolderLabel = new JLabel();
    JTextField _basefolderField = new JTextField();
    JButton _basefolderButton = new JButton();
-   JButton _backupButton = new JButton();
    JButton _aboutButton = new JButton();
    JButton _restartRemarkableButton = new JButton();
+   JButton _touchButtonToolsButton = new JButton();
 
    /**
     * Default constructor
@@ -164,7 +165,7 @@ public class TemplatesView extends JPanel
 
       _uploadButton.setActionCommand("Upload local templates");
       _uploadButton.setName("uploadButton");
-      _uploadButton.setText("Upload local (selected mode)");
+      _uploadButton.setText("upload");
       jpanel1.add(_uploadButton,cc.xy(2,26));
 
       jpanel1.add(createPanel2(),cc.xywh(2,10,18,1));
@@ -180,11 +181,6 @@ public class TemplatesView extends JPanel
       _basefolderButton.setText("...");
       jpanel1.add(_basefolderButton,cc.xy(19,8));
 
-      _backupButton.setActionCommand("Backup to local");
-      _backupButton.setName("backupButton");
-      _backupButton.setText("Backup to local");
-      jpanel1.add(_backupButton,cc.xy(4,26));
-
       _aboutButton.setActionCommand("About");
       _aboutButton.setName("aboutButton");
       _aboutButton.setText("About");
@@ -194,6 +190,11 @@ public class TemplatesView extends JPanel
       _restartRemarkableButton.setName("restartRemarkableButton");
       _restartRemarkableButton.setText("Restart Remarkable");
       jpanel1.add(_restartRemarkableButton,cc.xy(17,26));
+
+      _touchButtonToolsButton.setActionCommand("Touch/Button Tools");
+      _touchButtonToolsButton.setName("touchButtonToolsButton");
+      _touchButtonToolsButton.setText("Touch/Button Tools");
+      jpanel1.add(_touchButtonToolsButton,cc.xy(15,26));
 
       addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 });
       return jpanel1;

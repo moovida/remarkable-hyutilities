@@ -1,6 +1,12 @@
 package com.hydrologis.remarkable.utils;
 
+import java.awt.Image;
+import java.net.URL;
 import java.util.HashMap;
+
+import javax.swing.ImageIcon;
+
+import com.hydrologis.remarkable.TemplatesController;
 
 public enum IconsHandler {
     INSTANCE;
@@ -8,6 +14,8 @@ public enum IconsHandler {
     public static final String CUSTOM_ICON = "\\ue9fe";
 
     private HashMap<String, String> iconsMap = new HashMap<>();
+
+    private Image frameIconImage;
     private IconsHandler() {
         iconsMap.put("\ue9fe", "\\ue9fe");
         iconsMap.put("\ue9fd", "\\ue9fd");
@@ -80,6 +88,16 @@ public enum IconsHandler {
 
     public String getIconString( String code ) {
         return iconsMap.get(code);
+    }
+
+    public Image getFrameIcon() {
+        if (frameIconImage == null) {
+            Class<TemplatesController> class1 = TemplatesController.class;
+            URL resource = class1.getResource("/com/hydrologis/remarkable/hm150.png");
+            ImageIcon icon = new ImageIcon(resource);
+            frameIconImage = icon.getImage();
+        }
+        return frameIconImage;
     }
 
 }

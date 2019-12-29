@@ -31,6 +31,9 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -204,6 +207,28 @@ public class GuiUtilities {
         }
     }
 
+    public static boolean openWebpage( URI uri ) {
+        Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+        if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+            try {
+                desktop.browse(uri);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static boolean openWebpage( URL url ) {
+        try {
+            return openWebpage(url.toURI());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static JDialog openDialogWithPanel( JPanel panel, String title, Dimension dimension ) {
         JDialog f = new JDialog();
         f.add(panel, BorderLayout.CENTER);
@@ -213,6 +238,7 @@ public class GuiUtilities {
             f.setSize(dimension);
         f.setLocationRelativeTo(null); // Center on screen
         f.setVisible(true);
+        f.setIconImage(IconsHandler.INSTANCE.getFrameIcon());
         f.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         return f;
     }
