@@ -131,8 +131,8 @@ public class ApiHandler {
         if (token.length() == 0) {
             if (code == null) {
                 String userCode = GuiUtilities.showInputDialog(null,
-                        "Please enter the code genrated at https://my.remarkable.com/generator-device", "");
-                if (userCode.trim().length() == 0) {
+                        "Please enter the code generated at https://my.remarkable.com/generator-device", "");
+                if (userCode == null || userCode.trim().length() == 0) {
                     return null;
                 }
                 code = userCode;

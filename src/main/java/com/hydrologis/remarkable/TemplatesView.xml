@@ -25,7 +25,7 @@
     <at name="componentclass">com.jeta.forms.gui.form.FormComponent</at>
    </super>
    <at name="id">/home/hydrologis/development/remarkable/src/main/java/com/hydrologis/remarkable/TemplatesView.xml</at>
-   <at name="rowspecs">CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE</at>
+   <at name="rowspecs">CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,FILL:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE</at>
    <at name="colspecs">FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:8DLU:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:4DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE</at>
    <at name="components">
     <object classname="java.util.LinkedList">
@@ -134,7 +134,7 @@
              </object>
             </at>
             <at name="name">hostField</at>
-            <at name="width">854</at>
+            <at name="width">904</at>
             <at name="height">21</at>
            </object>
           </at>
@@ -248,7 +248,7 @@
              </object>
             </at>
             <at name="name">passwordField</at>
-            <at name="width">854</at>
+            <at name="width">904</at>
             <at name="height">27</at>
            </object>
           </at>
@@ -362,7 +362,7 @@
              </object>
             </at>
             <at name="name">userField</at>
-            <at name="width">854</at>
+            <at name="width">904</at>
             <at name="height">21</at>
            </object>
           </at>
@@ -532,7 +532,7 @@
              </object>
             </at>
             <at name="name">basefolderField</at>
-            <at name="width">804</at>
+            <at name="width">854</at>
             <at name="height">21</at>
            </object>
           </at>
@@ -831,8 +831,8 @@
                    </at>
                   </object>
                  </at>
-                 <at name="width">870</at>
-                 <at name="name"/>
+                 <at name="name"></at>
+                 <at name="width">920</at>
                  <at name="text">local</at>
                  <at name="fill">
                   <object classname="com.jeta.forms.store.properties.effects.PaintProperty">
@@ -857,8 +857,8 @@
                 <at name="row">3</at>
                 <at name="colspan">3</at>
                 <at name="rowspan">1</at>
-                <at name="halign">default</at>
-                <at name="valign">default</at>
+                <at name="halign">fill</at>
+                <at name="valign">fill</at>
                 <at name="insets" object="insets">0,0,0,0</at>
                </object>
               </at>
@@ -880,6 +880,29 @@
                     <object classname="java.util.LinkedList">
                      <item >
                       <at name="value">
+                       <object classname="com.jeta.forms.store.properties.EtchedBorderProperty">
+                        <super classname="com.jeta.forms.store.properties.BorderProperty">
+                         <at name="name">border</at>
+                         <at name="title"></at>
+                        </super>
+                        <at name="type">1</at>
+                        <at name="highlightcolor">
+                         <object classname="com.jeta.forms.store.properties.ColorProperty">
+                          <at name="name">dyncolor</at>
+                          <at name="colorkey">default</at>
+                         </object>
+                        </at>
+                        <at name="shadowcolor">
+                         <object classname="com.jeta.forms.store.properties.ColorProperty">
+                          <at name="name">dyncolor</at>
+                          <at name="colorkey">default</at>
+                         </object>
+                        </at>
+                       </object>
+                      </at>
+                     </item>
+                     <item >
+                      <at name="value">
                        <object classname="com.jeta.forms.store.properties.DefaultBorderProperty">
                         <super classname="com.jeta.forms.store.properties.BorderProperty">
                          <at name="name">border</at>
@@ -892,7 +915,7 @@
                   </object>
                  </at>
                  <at name="name">localTable</at>
-                 <at name="width">928</at>
+                 <at name="width">978</at>
                  <at name="scollBars">
                   <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
                    <at name="name">scollBars</at>
@@ -972,7 +995,7 @@
                    </at>
                   </object>
                  </at>
-                 <at name="width">870</at>
+                 <at name="width">920</at>
                  <at name="name"/>
                  <at name="text">remote</at>
                  <at name="fill">
@@ -1033,7 +1056,7 @@
                   </object>
                  </at>
                  <at name="name">remotePathField</at>
-                 <at name="width">870</at>
+                 <at name="width">920</at>
                  <at name="height">21</at>
                 </object>
                </at>
@@ -1075,6 +1098,29 @@
                     <object classname="java.util.LinkedList">
                      <item >
                       <at name="value">
+                       <object classname="com.jeta.forms.store.properties.EtchedBorderProperty">
+                        <super classname="com.jeta.forms.store.properties.BorderProperty">
+                         <at name="name">border</at>
+                         <at name="title"></at>
+                        </super>
+                        <at name="type">1</at>
+                        <at name="highlightcolor">
+                         <object classname="com.jeta.forms.store.properties.ColorProperty">
+                          <at name="name">dyncolor</at>
+                          <at name="colorkey">default</at>
+                         </object>
+                        </at>
+                        <at name="shadowcolor">
+                         <object classname="com.jeta.forms.store.properties.ColorProperty">
+                          <at name="name">dyncolor</at>
+                          <at name="colorkey">default</at>
+                         </object>
+                        </at>
+                       </object>
+                      </at>
+                     </item>
+                     <item >
+                      <at name="value">
                        <object classname="com.jeta.forms.store.properties.DefaultBorderProperty">
                         <super classname="com.jeta.forms.store.properties.BorderProperty">
                          <at name="name">border</at>
@@ -1087,7 +1133,7 @@
                   </object>
                  </at>
                  <at name="name">remoteTable</at>
-                 <at name="width">928</at>
+                 <at name="width">978</at>
                  <at name="scollBars">
                   <object classname="com.jeta.forms.store.properties.ScrollBarsProperty">
                    <at name="name">scollBars</at>

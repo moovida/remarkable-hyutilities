@@ -17,6 +17,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
 import com.jgoodies.forms.layout.CellConstraints;
@@ -29,23 +30,23 @@ public class TemplatesView extends JPanel
    JTextField _hostField = new JTextField();
    JLabel _passwordLabel = new JLabel();
    JPasswordField _passwordField = new JPasswordField();
-   JTable _localTable = new JTable();
-   JTextField _remotePathField = new JTextField();
-   JTable _remoteTable = new JTable();
-   JButton _refreshRemoteTemplatesButton = new JButton();
    JLabel _userLabel = new JLabel();
    JTextField _userField = new JTextField();
    JButton _uploadButton = new JButton();
-   JRadioButton _templatesModeButton = new JRadioButton();
-   ButtonGroup _buttongroup1 = new ButtonGroup();
-   JRadioButton _graphicsModeButton = new JRadioButton();
-   JRadioButton _backupModeButton = new JRadioButton();
    JLabel _basefolderLabel = new JLabel();
    JTextField _basefolderField = new JTextField();
    JButton _basefolderButton = new JButton();
    JButton _aboutButton = new JButton();
    JButton _restartRemarkableButton = new JButton();
    JButton _touchButtonToolsButton = new JButton();
+   JTable _localTable = new JTable();
+   JTextField _remotePathField = new JTextField();
+   JTable _remoteTable = new JTable();
+   JButton _refreshRemoteTemplatesButton = new JButton();
+   JRadioButton _templatesModeButton = new JRadioButton();
+   ButtonGroup _buttongroup1 = new ButtonGroup();
+   JRadioButton _graphicsModeButton = new JRadioButton();
+   JRadioButton _backupModeButton = new JRadioButton();
 
    /**
     * Default constructor
@@ -137,7 +138,7 @@ public class TemplatesView extends JPanel
    public JPanel createPanel()
    {
       JPanel jpanel1 = new JPanel();
-      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:8DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:4DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE");
+      FormLayout formlayout1 = new FormLayout("FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:8DLU:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:GROW(1.0),FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE,FILL:4DLU:NONE,FILL:DEFAULT:NONE,FILL:DEFAULT:NONE","CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,FILL:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:GROW(1.0),CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE,CENTER:DEFAULT:NONE");
       CellConstraints cc = new CellConstraints();
       jpanel1.setLayout(formlayout1);
 
@@ -155,7 +156,6 @@ public class TemplatesView extends JPanel
       _passwordField.setName("passwordField");
       jpanel1.add(_passwordField,cc.xywh(4,6,16,1));
 
-      jpanel1.add(createPanel1(),cc.xywh(2,12,18,13));
       _userLabel.setName("userLabel");
       _userLabel.setText("User");
       jpanel1.add(_userLabel,cc.xy(2,4));
@@ -168,7 +168,6 @@ public class TemplatesView extends JPanel
       _uploadButton.setText("upload");
       jpanel1.add(_uploadButton,cc.xy(2,26));
 
-      jpanel1.add(createPanel2(),cc.xywh(2,10,18,1));
       _basefolderLabel.setName("basefolderLabel");
       _basefolderLabel.setText("Basefolder");
       jpanel1.add(_basefolderLabel,cc.xy(2,8));
@@ -196,6 +195,8 @@ public class TemplatesView extends JPanel
       _touchButtonToolsButton.setText("Touch/Button Tools");
       jpanel1.add(_touchButtonToolsButton,cc.xy(15,26));
 
+      jpanel1.add(createPanel1(),cc.xywh(2,12,18,13));
+      jpanel1.add(createPanel2(),cc.xywh(2,10,18,1));
       addFillComponents(jpanel1,new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 },new int[]{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 });
       return jpanel1;
    }
@@ -212,11 +213,13 @@ public class TemplatesView extends JPanel
       jpanel1.add(jlabel1,cc.xy(1,1));
 
       _localTable.setName("localTable");
+      EtchedBorder etchedborder1 = new EtchedBorder(EtchedBorder.LOWERED,null,null);
+      _localTable.setBorder(etchedborder1);
       JScrollPane jscrollpane1 = new JScrollPane();
       jscrollpane1.setViewportView(_localTable);
       jscrollpane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
       jscrollpane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      jpanel1.add(jscrollpane1,cc.xywh(1,3,3,1));
+      jpanel1.add(jscrollpane1,new CellConstraints(1,3,3,1,CellConstraints.FILL,CellConstraints.FILL));
 
       JLabel jlabel2 = new JLabel();
       jlabel2.setText("remote");
@@ -226,6 +229,8 @@ public class TemplatesView extends JPanel
       jpanel1.add(_remotePathField,cc.xy(1,6));
 
       _remoteTable.setName("remoteTable");
+      EtchedBorder etchedborder2 = new EtchedBorder(EtchedBorder.LOWERED,null,null);
+      _remoteTable.setBorder(etchedborder2);
       JScrollPane jscrollpane2 = new JScrollPane();
       jscrollpane2.setViewportView(_remoteTable);
       jscrollpane2.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
