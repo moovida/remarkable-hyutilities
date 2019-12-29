@@ -77,6 +77,23 @@ If that one is pushed, the application will:
 
 **Note that the backup action can be very long going if you have many data on the device. Let the app the time to finish.**
 
+## Touch and button tools
+
+I spend half of my remarkable-life using the tablet in landscape mode in order to avoid pushing 
+the right page button while writing with the palm of my hand.
+
+[This great guy](https://github.com/LinusCDE/) wrote 2 interesting applications, one of which is what I have been long 
+looking for:
+
+* [rmButtonToggler](https://github.com/LinusCDE/rmButtonToggler), which allows to disable the buttons using a shortcut.
+* [rmTouchToggler](https://github.com/LinusCDE/rmTouchToggler), which allows to disable finger touches using a shortcut.
+
+It is now possible to install them with a few clicks from the utils:
+
+![Touch/Button Tools](images/06_touchbuttontools.png)
+
+Please read the suggestions of the author before installing. 
+
 ## Restart device
 
 There is also a restart device button. Once uploads have been done, it is better to restart your device. 
