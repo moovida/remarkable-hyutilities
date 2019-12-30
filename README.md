@@ -1,6 +1,6 @@
 # reMarkable HyUtilities
 
-**Don't care, where do I get it?** [LAST VERSION HERE](https://github.com/moovida/remarkable-hyutilities/releases/download/v1.3/remarkable_hyutilities_v1.3.zip)
+**Don't care, where do I get it?** [LAST VERSION HERE](https://github.com/moovida/remarkable-hyutilities/releases/download/v1.4/remarkable_hyutilities_v1.4.zip)
 
 
 reMarkable HyUtilities is a simple application that helps the reMArkable user 
